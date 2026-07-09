@@ -483,8 +483,6 @@ body {
     color: #e94560;
 }
 
-
-
 /* ============================================
    VOICE PICKER — flat list
    ============================================ */
@@ -611,6 +609,30 @@ body {
     flex: 1;
 }
 
+.bot-toggle {
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.bot-toggle:hover {
+    background: rgba(255,255,255,0.05);
+    color: #aaa;
+}
+
+.bot-panel.collapsed .bot-panel-output {
+    display: none;
+}
+
+.bot-panel.collapsed .bot-toggle {
+    transform: rotate(0deg);
+}
+
 .bot-panel-output {
     flex: 1;
     padding: 16px;
@@ -661,6 +683,10 @@ body {
     .bot-panel-output .cursor {
         background: #6fbf6f;
     }
+    .bot-toggle:hover {
+        background: rgba(255,255,255,0.08);
+        color: #888;
+    }
 }
 
 /* Dark mode for header & activate */
@@ -699,6 +725,17 @@ body {
     
     .project-detail h2 {
         font-size: 22px;
+    }
+
+    .project-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .activate-btn {
+        width: 100%;
+        text-align: center;
     }
 }
 
@@ -822,5 +859,46 @@ body {
 
     .terminal-output .cursor {
         background: #6fbf6f;
+    }
+
+    /* Quote Video dark mode fixes */
+    #qvm-status {
+        background: #0d0d1a !important;
+        color: #aaa !important;
+    }
+    
+    #qvm-assets {
+        background: #0d0d1a !important;
+        color: #aaa !important;
+    }
+    
+    #master-prompt-area,
+    #qvm-json {
+        background: #0d0d1a !important;
+        color: #e0e0e0 !important;
+        border-color: #333 !important;
+    }
+    
+    #qvm-output-list div {
+        background: #0d0d1a !important;
+        border-color: #333 !important;
+        color: #e0e0e0 !important;
+    }
+
+    /* Welcome page dark mode */
+    .welcome h2 {
+        color: #aaa;
+    }
+
+    .welcome div[style*="background: #f5f5f5"] {
+        background: #0d0d1a !important;
+    }
+
+    .welcome h3 {
+        color: #e94560 !important;
+    }
+
+    .welcome p {
+        color: #aaa !important;
     }
 }

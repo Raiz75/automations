@@ -1,12 +1,22 @@
+<!-- automations\main\templates\quote-video.html -->
 {% extends "_base.html" %}
 
 {% block title %}Quote Video Maker{% endblock %}
 
 {% block content %}
-<div class="project-detail">
-    <h2>🎬 Quote Video Maker</h2>
-    <p class="description">Generate 1080×1920 vertical quote videos with typewriter animation, Ken Burns zoom, and background music — for TikTok, YouTube Shorts, and Instagram Reels.</p>
+{% import "_partials/project_header.html" as header %}
+{% import "_partials/project_content.html" as content %}
 
+{{ header.project_header(
+    title="🎬 Quote Video Maker",
+    description="Generate 1080×1920 vertical quote videos with typewriter animation, Ken Burns zoom, and background music — for TikTok, YouTube Shorts, and Instagram Reels.",
+    status_dot="checking",
+    status_label="checking engine…",
+    activate_text="Activate",
+    project_id="quote-video"
+) }}
+
+{% call content.project_content("quote-video") %}
     <!-- Status -->
     <div class="section">
         <h3>Status</h3>
@@ -55,7 +65,8 @@
         <h3>Output Videos</h3>
         <div id="qvm-output-list" style="display:flex; flex-direction:column; gap:6px;"></div>
     </div>
-</div>
+{% endcall %}
+
 {% endblock %}
 
 {% block scripts %}
@@ -73,14 +84,26 @@
             .then(r => r.json())
             .then(s => {
                 const el = document.getElementById("qvm-status");
+                const dot = document.querySelector('.status-dot');
+                const label = document.querySelector('.status-dot-label');
                 if (s.bg_images !== undefined) {
                     el.innerHTML = `<span style="color:#28a745;">✓ Ready</span> &mdash; ${s.bg_images} images, ${s.bg_music} music tracks (${s.video_duration}s videos)`;
+                    dot.className = 'status-dot online';
+                    dot.title = 'Engine ready';
+                    label.textContent = 'engine ready';
                 } else {
                     el.innerHTML = `<span style="color:#e94560;">✗ Engine not available</span>`;
+                    dot.className = 'status-dot offline';
+                    dot.title = 'Engine unavailable';
+                    label.textContent = 'engine offline';
                 }
             })
             .catch(e => {
                 document.getElementById("qvm-status").innerHTML = `<span style="color:#e94560;">Error: ${e.message}</span>`;
+                const dot = document.querySelector('.status-dot');
+                dot.className = 'status-dot offline';
+                dot.title = 'Error';
+                document.querySelector('.status-dot-label').textContent = 'error';
             });
     }
 

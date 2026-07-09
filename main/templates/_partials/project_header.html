@@ -1,0 +1,20 @@
+<!-- automations\main\templates\_partials\project-header.html -->
+{% macro project_header(title, description, status_dot='', status_label='', activate_text='Activate', project_id='') %}
+<div class="project-header">
+    <div class="project-header-info">
+        <h2>
+            {{ title }}
+            {% if status_dot %}
+                <span class="status-dot {{ status_dot }}" title="{{ 'Checking...' if status_dot == 'checking' else 'TTS ready' if status_dot == 'online' else 'TTS unavailable' }}"></span>
+                <span class="status-dot-label">{{ status_label }}</span>
+            {% endif %}
+        </h2>
+        <p class="description">{{ description }}</p>
+    </div>
+    <button 
+        id="activate-btn-{{ project_id }}" 
+        class="activate-btn activate" 
+        onclick="toggleProjectActiveMode('{{ project_id }}')"
+    >{{ activate_text }}</button>
+</div>
+{% endmacro %}

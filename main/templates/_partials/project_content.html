@@ -1,0 +1,6 @@
+<!-- automations\main\templates\_partials\project_content.html -->
+{% macro project_content(project_id) %}
+<div id="project-content-{{ project_id }}" class="project-content locked">
+    {{ caller() }}
+</div>
+{% endmacro %}

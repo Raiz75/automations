@@ -4,16 +4,19 @@
 {% block title %}Text to Speech{% endblock %}
 
 {% block content %}
-<div class="project-detail">
-    <div class="project-header">
-        <div class="project-header-info">
-            <h2>🔊 Text to Speech <span id="tts-dot" class="status-dot checking" title="Checking..."></span> <span id="tts-dot-label" class="status-dot-label">checking engine…</span></h2>
-            <p class="description">Generate high-quality MP3 audio from text using Kokoro ONNX with 54 voices across multiple languages.</p>
-        </div>
-        <button id="activate-btn" class="activate-btn activate" onclick="toggleActiveMode()">Activate</button>
-    </div>
+{% import "_partials/project_header.html" as header %}
+{% import "_partials/project_content.html" as content %}
 
-    <div id="project-content" class="project-content locked">
+{{ header.project_header(
+    title="🔊 Text to Speech",
+    description="Generate high-quality MP3 audio from text using Kokoro ONNX with 54 voices across multiple languages.",
+    status_dot="checking",
+    status_label="checking engine…",
+    activate_text="Activate",
+    project_id="tts"
+) }}
+
+{% call content.project_content("tts") %}
     <!-- Input Text -->
     <div class="section">
         <h3>Input Text</h3>
@@ -43,7 +46,8 @@
     <!-- Generate Button -->
     <button onclick="generateSpeech()" class="github-link" style="background: #e94560; margin-top: 10px;" id="generate-btn" disabled>Generate Speech</button>
     <div id="tts-loading" style="display: none; margin-top: 10px; color: #e94560; font-weight: 500;">Generating speech... Please wait (this may take a few seconds).</div>
-</div></div>
+{% endcall %}
+
 {% endblock %}
 
 {% block scripts %}
@@ -59,34 +63,12 @@
         ta.focus();
     }
 
-    function toggleActiveMode() {
-        const btn = document.getElementById('activate-btn');
-        const content = document.getElementById('project-content');
-        const nativeInputs = content.querySelectorAll('textarea, button');
-        if (btn.classList.contains('activate')) {
-            enterActiveMode();
-            btn.textContent = 'Stop';
-            btn.className = 'activate-btn stop';
-            content.classList.remove('locked');
-            nativeInputs.forEach(el => el.disabled = false);
-            document.getElementById('tts-text').focus();
-            botLog('Session activated. TTS engine ready.');
-        } else {
-            exitActiveMode();
-            btn.textContent = 'Activate';
-            btn.className = 'activate-btn activate';
-            content.classList.add('locked');
-            nativeInputs.forEach(el => el.disabled = true);
-            botLog('Session deactivated.');
-        }
-    }
-
     // Check TTS status on load
     fetch("/api/tts/status")
         .then(r => r.json())
         .then(status => {
-            const dot = document.getElementById("tts-dot");
-            const label = document.getElementById("tts-dot-label");
+            const dot = document.querySelector('.status-dot');
+            const label = document.querySelector('.status-dot-label');
             if (status.available) {
                 dot.className = 'status-dot online';
                 dot.title = 'TTS ready';
@@ -100,8 +82,8 @@
             }
         })
         .catch(error => {
-            const dot = document.getElementById("tts-dot");
-            const label = document.getElementById("tts-dot-label");
+            const dot = document.querySelector('.status-dot');
+            const label = document.querySelector('.status-dot-label');
             dot.className = 'status-dot offline';
             dot.title = 'Error checking status';
             label.textContent = 'engine error';
@@ -268,7 +250,8 @@
     // Keyboard shortcut: Ctrl+Enter / Cmd+Enter
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            if (!document.querySelector('.layout.active-mode')) return;
+            const content = document.getElementById('project-content-tts');
+            if (content.classList.contains('locked')) return;
             const btn = document.getElementById('generate-btn');
             if (!btn.disabled) generateSpeech();
         }
