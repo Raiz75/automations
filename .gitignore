@@ -10,7 +10,7 @@ build/
 .env.*
 venv/
 .env/
-.soul/.obsidian/*
+.soul/.obsidian/
 
 # OS
 .DS_Store
