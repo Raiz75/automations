@@ -1,0 +1,277 @@
+<!-- automations\main\templates\tts.html -->
+{% extends "_base.html" %}
+
+{% block title %}Text to Speech{% endblock %}
+
+{% block content %}
+<div class="project-detail">
+    <div class="project-header">
+        <div class="project-header-info">
+            <h2>🔊 Text to Speech <span id="tts-dot" class="status-dot checking" title="Checking..."></span> <span id="tts-dot-label" class="status-dot-label">checking engine…</span></h2>
+            <p class="description">Generate high-quality MP3 audio from text using Kokoro ONNX with 54 voices across multiple languages.</p>
+        </div>
+        <button id="activate-btn" class="activate-btn activate" onclick="toggleActiveMode()">Activate</button>
+    </div>
+
+    <div id="project-content" class="project-content locked">
+    <!-- Input Text -->
+    <div class="section">
+        <h3>Input Text</h3>
+        <div class="textarea-wrap">
+            <textarea id="tts-text" rows="6" placeholder="Enter text to convert to speech..." disabled>Hello! This is a test of the text-to-speech system using Kokoro ONNX. You can type any text here and it will be converted to speech with your chosen voice.</textarea>
+            <button class="textarea-clear" onclick="clearText()" title="Clear text">✕</button>
+        </div>
+        <div style="margin-top:6px; font-size:12px; color:#aaa;">Ctrl+Enter to generate</div>
+    </div>
+
+    <!-- Voice Selection -->
+    <div class="section">
+        <h3>Select Voice</h3>
+        <div id="voice-picker" class="voice-picker">
+            <div style="padding:20px; text-align:center; color:#888; font-size:13px;">Loading voices...</div>
+        </div>
+    </div>
+
+    <!-- Audio Preview -->
+    <div class="section">
+        <h3>Audio Preview</h3>
+        <div id="tts-audio-container" style="display: none;">
+            <audio id="tts-audio" controls style="width: 100%;"></audio>
+        </div>
+    </div>
+
+    <!-- Generate Button -->
+    <button onclick="generateSpeech()" class="github-link" style="background: #e94560; margin-top: 10px;" id="generate-btn" disabled>Generate Speech</button>
+    <div id="tts-loading" style="display: none; margin-top: 10px; color: #e94560; font-weight: 500;">Generating speech... Please wait (this may take a few seconds).</div>
+</div></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentAudioUrl = null;
+    let currentFilename = null;
+    let selectedVoice = null;
+    let voiceCache = {};
+
+    function clearText() {
+        const ta = document.getElementById('tts-text');
+        ta.value = '';
+        ta.focus();
+    }
+
+    function toggleActiveMode() {
+        const btn = document.getElementById('activate-btn');
+        const content = document.getElementById('project-content');
+        const nativeInputs = content.querySelectorAll('textarea, button');
+        if (btn.classList.contains('activate')) {
+            enterActiveMode();
+            btn.textContent = 'Stop';
+            btn.className = 'activate-btn stop';
+            content.classList.remove('locked');
+            nativeInputs.forEach(el => el.disabled = false);
+            document.getElementById('tts-text').focus();
+            botLog('Session activated. TTS engine ready.');
+        } else {
+            exitActiveMode();
+            btn.textContent = 'Activate';
+            btn.className = 'activate-btn activate';
+            content.classList.add('locked');
+            nativeInputs.forEach(el => el.disabled = true);
+            botLog('Session deactivated.');
+        }
+    }
+
+    // Check TTS status on load
+    fetch("/api/tts/status")
+        .then(r => r.json())
+        .then(status => {
+            const dot = document.getElementById("tts-dot");
+            const label = document.getElementById("tts-dot-label");
+            if (status.available) {
+                dot.className = 'status-dot online';
+                dot.title = 'TTS ready';
+                label.textContent = 'engine online';
+                loadVoices();
+            } else {
+                dot.className = 'status-dot offline';
+                dot.title = 'TTS unavailable';
+                label.textContent = 'engine offline';
+                document.getElementById('voice-picker').innerHTML = '<div style="padding:20px; text-align:center; color:#e94560; font-size:13px;">Engine offline — voices unavailable</div>';
+            }
+        })
+        .catch(error => {
+            const dot = document.getElementById("tts-dot");
+            const label = document.getElementById("tts-dot-label");
+            dot.className = 'status-dot offline';
+            dot.title = 'Error checking status';
+            label.textContent = 'engine error';
+        });
+
+    function loadVoices() {
+        fetch("/api/tts/voices")
+            .then(r => r.json())
+            .then(voices => {
+                if (!voices || voices.length === 0) {
+                    document.getElementById('voice-picker').innerHTML = '<div style="padding:20px; text-align:center; color:#e94560; font-size:13px;">No voices available</div>';
+                    return;
+                }
+                renderVoicePicker(voices);
+                if (voices.length > 0) {
+                    selectVoice(voices[0]);
+                }
+            })
+            .catch(() => {
+                document.getElementById('voice-picker').innerHTML = '<div style="padding:20px; text-align:center; color:#e94560; font-size:13px;">Failed to load voices</div>';
+            });
+    }
+
+    function renderVoicePicker(voices) {
+        const container = document.getElementById('voice-picker');
+        container.innerHTML = '';
+        voices.forEach(voice => {
+            const item = document.createElement('div');
+            item.className = 'voice-item';
+            item.dataset.voice = voice;
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'name';
+            nameSpan.textContent = voice;
+
+            const previewBtn = document.createElement('button');
+            previewBtn.className = 'preview-btn';
+            previewBtn.textContent = '▶';
+            previewBtn.title = 'Preview this voice';
+
+            item.appendChild(nameSpan);
+            item.appendChild(previewBtn);
+
+            item.addEventListener('click', function(e) {
+                if (e.target.closest('.preview-btn')) return;
+                selectVoice(voice);
+            });
+
+            previewBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                previewVoice(voice, previewBtn);
+            });
+
+            container.appendChild(item);
+        });
+    }
+
+    function selectVoice(voice) {
+        selectedVoice = voice;
+        document.querySelectorAll('.voice-item').forEach(function(el) {
+            el.classList.toggle('selected', el.dataset.voice === voice);
+        });
+        botLog('Selected voice: ' + voice);
+    }
+
+    function previewVoice(voice, btn) {
+        if (voiceCache[voice]) {
+            const audio = new Audio(voiceCache[voice]);
+            audio.play();
+            return;
+        }
+
+        btn.textContent = '◌';
+        btn.classList.add('preview-loading');
+        botLog('Preview: ' + voice);
+
+        fetch("/api/tts/preview/" + voice)
+        .then(r => {
+            if (!r.ok) throw new Error('Preview failed');
+            return r.blob();
+        })
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            voiceCache[voice] = url;
+            const audio = new Audio(url);
+            audio.play();
+            botLog('Preview ready: ' + voice);
+        })
+        .catch(e => {
+            botLog('Preview error: ' + voice + ' — ' + e.message);
+        })
+        .finally(() => {
+            btn.textContent = '▶';
+            btn.classList.remove('preview-loading');
+        });
+    }
+
+    function generateSpeech() {
+        const text = document.getElementById("tts-text").value.trim();
+        if (!text) {
+            showToast('Please enter some text to convert to speech.', 'error');
+            return;
+        }
+
+        if (!selectedVoice) {
+            showToast('Please select a voice.', 'error');
+            return;
+        }
+
+        const voice = selectedVoice;
+        const loading = document.getElementById("tts-loading");
+        const audioContainer = document.getElementById("tts-audio-container");
+        const generateBtn = document.getElementById("generate-btn");
+
+        loading.style.display = "block";
+        loading.classList.add('active');
+        generateBtn.disabled = true;
+        audioContainer.style.display = "none";
+
+        const shortText = text.length > 50 ? text.slice(0, 50) + '...' : text;
+        botLog('Generating speech for: "' + shortText + '"');
+        botLog('Voice: ' + voice);
+
+        fetch("/api/tts/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text, voice: voice })
+        })
+        .then(r => {
+            botLog('Response status: ' + r.status);
+            return r.json();
+        })
+        .then(data => {
+            if (data.error) {
+                showToast('Error: ' + data.error, 'error');
+                botLog('Error: ' + data.error);
+                return;
+            }
+
+            if (data.success) {
+                currentAudioUrl = data.audio_url;
+                currentFilename = data.filename;
+
+                const audio = document.getElementById("tts-audio");
+                audio.src = currentAudioUrl;
+                audioContainer.style.display = "block";
+
+                showToast('Speech generated successfully!', 'success');
+                botLog('Success: ' + data.filename + ' (' + (data.duration || '?') + 's)');
+            }
+        })
+        .catch(error => {
+            showToast('Error: ' + error.message, 'error');
+            botLog('Network error: ' + error.message);
+            console.error("Error:", error);
+        })
+        .finally(() => {
+            loading.style.display = "none";
+            loading.classList.remove('active');
+            generateBtn.disabled = false;
+        });
+    }
+
+    // Keyboard shortcut: Ctrl+Enter / Cmd+Enter
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            if (!document.querySelector('.layout.active-mode')) return;
+            const btn = document.getElementById('generate-btn');
+            if (!btn.disabled) generateSpeech();
+        }
+    });
+</script>
+{% endblock %}

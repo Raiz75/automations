@@ -1,0 +1,23 @@
+{
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 24,
+    "duration": 5,
+    "typing_duration": 2.0
+  },
+  "fonts": {
+    "quote_size": 68,
+    "author_size": 42,
+    "line_spacing": 1.45,
+    "author_gap": 40
+  },
+  "visual": {
+    "shadow_offset": 3,
+    "dark_overlay_opacity": 110,
+    "zoom_start": 1.0,
+    "zoom_end": 1.10,
+    "pad_left": 60,
+    "right_button_margin": 200
+  }
+}

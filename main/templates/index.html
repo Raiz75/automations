@@ -1,0 +1,23 @@
+<!-- automations\main\templates\index.html -->
+{% extends "_base.html" %}
+
+{% block title %}Python Hub - Overview{% endblock %}
+
+{% block content %}
+<div class="welcome">
+    <h2>Welcome to Python Project Hub</h2>
+    <p>Select a project from the sidebar to view details.</p>
+    <div style="margin-top: 30px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; max-width: 300px;">
+                <h3 style="color: #e94560; margin-bottom: 10px;">🔊 Text to Speech</h3>
+                <p style="color: #666; font-size: 14px;">Generate high-quality MP3 audio from text with 54 voices across multiple languages.</p>
+                <button onclick="window.location.href='/tts'" class="github-link" style="margin-top: 15px; background: #e94560;">Try it now</button>
+            </div>
+            <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; max-width: 300px;">
+                <h3 style="color: #e94560; margin-bottom: 10px;">🎬 Quote Video Maker</h3>
+                <p style="color: #666; font-size: 14px;">Generate vertical quote videos with typewriter animation, Ken Burns zoom, and background music.</p>
+                <button onclick="window.location.href='/quote-video'" class="github-link" style="margin-top: 15px; background: #e94560;">Try it now</button>
+            </div>
+    </div>
+</div>
+{% endblock %}

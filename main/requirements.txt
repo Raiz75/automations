@@ -1,0 +1,8 @@
+# automations/main/requirements.txt
+flask
+kokoro-onnx
+soundfile
+pydub
+moviepy==1.0.3
+Pillow
+numpy

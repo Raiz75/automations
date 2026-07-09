@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+venv/
+.env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# TTS
+engine/TTS/__pycache__/
+engine/TTS/output/*
+!engine/TTS/output/.gitkeep
+engine/TTS/voice-sample/*
+!engine/TTS/voice-sample/.gitkeep
+engine/TTS/kokoro-v1.0.onnx
+engine/TTS/voices-v1.0.bin
+
+# QUOTE VIDEO
+engine/quote-video-maker/__pycache__/
+engine/quote-video-maker/bg-image/*
+!engine/quote-video-maker/bg-image/.gitkeep
+engine/quote-video-maker/bg-music/*
+!engine/quote-video-maker/bg-music/.gitkeep
+engine/quote-video-maker/output/*
+!engine/quote-video-maker/output/.gitkeep
+engine/quote-video-maker/state.json
