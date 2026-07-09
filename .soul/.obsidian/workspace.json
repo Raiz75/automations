@@ -13,15 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "frontend-ui.md",
+                "file": "data-flow-architecture.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "frontend-ui"
+              "title": "data-flow-architecture"
+            }
+          },
+          {
+            "id": "e4323089091958fd",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -180,14 +191,15 @@
       "bases:Create new base": false
     }
   },
-  "active": "9d0b43e249b85e1a",
+  "active": "e4323089091958fd",
   "lastOpenFiles": [
-    "main-app-flask.md",
-    "orchestration-layer.md",
-    "data-flow-architecture.md",
-    "frontend-ui.md",
     "automations-home.md",
+    "data-flow-architecture.md",
+    "quote-video-engine.md",
     "tts-engine.md",
-    "quote-video-engine.md"
+    "frontend-ui.md",
+    "Untitled.base",
+    "orchestration-layer.md",
+    "main-app-flask.md"
   ]
 }

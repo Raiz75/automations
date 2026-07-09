@@ -37,32 +37,32 @@ A Flask web application that exposes two media-generation engines as a unified w
 ```
 automations/
 ├── .gitignore
-├── .obsidian/                  # Vault config & docs
-├── docs/superpowers/           # Original design specs & plans
+├── .obsidian/ # Vault config & docs
+├── docs/superpowers/             # Original design specs & plans
 ├── engine/
-│   ├── TTS/                    # Text-to-speech engine
-│   │   ├── tts_engine.py       # Kokoro model wrapper
-│   │   ├── voice-sample/       # Cached preview MP3s (54 voices)
-│   │   └── output/             # Generated audio
-│   └── quote-video-maker/      # Quote video engine
-│       ├── render_quote.py     # Core rendering (PIL + MoviePy)
-│       ├── quote_video_engine.py  # Orchestration layer
-│       ├── config.json         # Rendering parameters
-│       ├── state.json          # Batch counter
-│       ├── prompts/            # LLM master prompt
-│       ├── bg-image/           # Background images
-│       ├── bg-music/           # Background music
-│       └── output/             # Generated MP4s
+│   ├── TTS/                      # Text-to-speech engine
+│   │   ├── tts_engine.py         # Kokoro model wrapper
+│   │   ├── voice-sample/         # Cached preview MP3s (54 voices)
+│   │   └── output/               # Generated audio
+│   └── quote-video-maker/        # Quote video engine
+│       ├── render_quote.py       # Core rendering (PIL + MoviePy)
+│       ├── quote_video_engine.py # Orchestration layer
+│       ├── config.json           # Rendering parameters
+│       ├── state.json            # Batch counter
+│       ├── prompts/              # LLM master prompt
+│       ├── bg-image/             # Background images
+│       ├── bg-music/             # Background music
+│       └── output/               # Generated MP4s
 └── main/
-    ├── app.py                  # Flask entry point
-    ├── routes.py               # All HTTP routes & API
+    ├── app.py                    # Flask entry point
+    ├── routes.py                 # All HTTP routes & API
     ├── requirements.txt
-    ├── static/style.css        # 826 lines of styling
+    ├── static/style.css          # 826 lines of styling
     └── templates/
-        ├── _base.html          # Base layout (sidebar, content, bot console)
-        ├── index.html          # Overview landing page
-        ├── tts.html            # TTS interface
-        └── quote-video.html    # Quote video interface
+        ├── _base.html            # Base layout (sidebar, content, bot console)
+        ├── index.html            # Overview landing page
+        ├── tts.html              # TTS interface
+        └── quote-video.html      # Quote video interface
 ```
 
 ## Port

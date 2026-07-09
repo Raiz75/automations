@@ -3,6 +3,7 @@
     "aliases": "aliases",
     "cssclasses": "multitext",
     "tags": "tags",
-    "qwe": "number"
+    "qwe": "number",
+    "If modified, also check:": "multitext"
   }
 }
