@@ -37,32 +37,46 @@ A Flask web application that exposes two media-generation engines as a unified w
 ```
 automations/
 ├── .gitignore
-├── .obsidian/ # Vault config & docs
+├── .obsidian/                    # Vault config & docs
 ├── docs/superpowers/             # Original design specs & plans
+│   ├── plans/
+│   └── specs/
 ├── engine/
 │   ├── TTS/                      # Text-to-speech engine
 │   │   ├── tts_engine.py         # Kokoro model wrapper
-│   │   ├── voice-sample/         # Cached preview MP3s (54 voices)
+│   │   ├── kokoro-v1.0.onnx     # ONNX model (~310 MB, gitignored)
+│   │   ├── voices-v1.0.bin      # Voice pack (gitignored)
+│   │   ├── voice-sample/         # Pre-generated preview MP3s (54 files)
 │   │   └── output/               # Generated audio
 │   └── quote-video-maker/        # Quote video engine
+│       ├── __init__.py
 │       ├── render_quote.py       # Core rendering (PIL + MoviePy)
 │       ├── quote_video_engine.py # Orchestration layer
 │       ├── config.json           # Rendering parameters
 │       ├── state.json            # Batch counter
+│       ├── state.example.json    # Example state file
 │       ├── prompts/              # LLM master prompt
 │       ├── bg-image/             # Background images
 │       ├── bg-music/             # Background music
-│       └── output/               # Generated MP4s
+│       ├── output/               # Generated MP4s
+│       └── yt-files/             # YouTube export files
 └── main/
     ├── app.py                    # Flask entry point
     ├── routes.py                 # All HTTP routes & API
     ├── requirements.txt
-    ├── static/style.css          # 826 lines of styling
+    ├── static/
+    │   ├── style.css             # 826 lines of styling
+    │   └── js/
+    │       └── project_activation.js
     └── templates/
         ├── _base.html            # Base layout (sidebar, content, bot console)
         ├── index.html            # Overview landing page
         ├── tts.html              # TTS interface
-        └── quote-video.html      # Quote video interface
+        ├── quote-video.html      # Quote video interface
+        └── _partials/            # Reusable template fragments
+            ├── bot_panel.html
+            ├── project_content.html
+            └── project_header.html
 ```
 
 ## Port

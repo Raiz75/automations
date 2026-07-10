@@ -23,7 +23,7 @@ All templates extend `_base.html` using Jinja2 blocks.
 
 ### `_base.html` — Master Layout
 
-Three-panel structure:
+Extends `_partials/` fragments for modular structure. Three-panel layout:
 
 ```
 ┌──────────────┬─────────────────────┬──────────────────────┐
@@ -33,6 +33,11 @@ Three-panel structure:
 │              │                     │                      │
 └──────────────┴─────────────────────┴──────────────────────┘
 ```
+
+**Partials (`templates/_partials/`):**
+- `bot_panel.html` — Bot console panel UI
+- `project_content.html` — Shared content wrapper
+- `project_header.html` — Project header with icons
 
 **Features:**
 - Navigation loaded dynamically from `/api/navigation`
@@ -61,6 +66,13 @@ Landing page with project summary. Minimal — extends `_base.html` with overvie
 - Generation log / progress
 - Output list with download links
 
+## JavaScript
+
+| File | Location | Purpose |
+|---|---|---|
+| Inline `<script>` | Embedded in each template | Page-specific logic |
+| `project_activation.js` | `static/js/project_activation.js` | Active Mode toggle, lock overlay, bot console |
+
 ## JavaScript Interactions
 
 | Feature | Mechanism |
@@ -70,7 +82,7 @@ Landing page with project summary. Minimal — extends `_base.html` with overvie
 | Voice Preview | `GET /api/tts/preview/<voice>` → audio playback |
 | Quote Gen | `POST /api/quote-video/generate` → display results |
 | Copy Prompt | `fetch` → `navigator.clipboard.writeText()` |
-| Active Mode | CSS overlay + panel toggle |
+| Active Mode | CSS overlay + panel toggle (via `project_activation.js`) |
 | Toast | DOM-created notification divs |
 
 > [!tip] No frontend frameworks — everything is vanilla `fetch()`, DOM manipulation, and CSS transitions.

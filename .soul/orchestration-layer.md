@@ -76,9 +76,15 @@ A detailed LLM prompt for generating viral quotes via AI:
 
 | Directory | Contents | Gitignored? |
 |---|---|---|
+| `__init__.py` | Package init (import helper) | No |
+| `config.json` | Rendering parameters | No |
+| `state.json` | Persistent batch counter | No |
+| `state.example.json` | Example state file | No |
+| `prompts/` | Master prompt text files | No |
 | `bg-image/` | Background images (e.g. `page16.png`) | Partial (images yes, `.gitkeep` no) |
 | `bg-music/` | Background music tracks (e.g. `bgMusic.mp3`) | Partial (music yes, `.gitkeep` no) |
 | `output/` | Generated MP4 videos | Partial (videos yes, `.gitkeep` no) |
+| `yt-files/` | YouTube export files | Partial (files yes, `.gitkeep` no) |
 
 ## Related
 

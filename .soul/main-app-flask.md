@@ -77,7 +77,7 @@ kokoro-onnx
 soundfile
 pydub
 moviepy==1.0.3
-pillow
+Pillow
 numpy
 ```
 

@@ -43,20 +43,25 @@ POST /api/tts/generate {text, voice}
 
 ## Voices (54 total)
 
-8 language variants with codes:
+10 language variants with codes:
 
 | Prefix | Language | Examples |
 |---|---|---|
 | `af_` | American English (female) | `af_heart`, `af_alloy`, `af_nicole` |
 | `am_` | American English (male) | `am_adam`, `am_michael`, `am_liam` |
 | `bf_` | British English (female) | `bf_alice`, `bf_emma`, `bf_lily` |
-| `bm_` | British English (male) | `bm_daniel`, `bm_george`, `bm_james` |
-| `jf_` | Japanese (female) | `jf_alpha`, `jf_gongitsune` |
-| `zm_` | Mandarin (male) | `zm_yunxi`, `zm_yunyang` |
+| `bm_` | British English (male) | `bm_daniel`, `bm_fable`, `bm_george`, `bm_lewis` |
+| `jf_` | Japanese (female) | `jf_alpha`, `jf_gongitsune`, `jf_nezumi`, `jf_tebukuro` |
+| `jm_` | Japanese (male) | `jm_kumo` |
+| `zf_` | Mandarin Chinese (female) | `zf_xiaobei`, `zf_xiaoni`, `zf_xiaoxiao`, `zf_xiaoyi` |
+| `zm_` | Mandarin Chinese (male) | `zm_yunjian`, `zm_yunxi`, `zm_yunxia`, `zm_yunyang` |
 | `ef_` | Spanish (female) | `ef_dora` |
+| `em_` | Spanish (male) | `em_alex`, `em_santa` |
 | `ff_` | French (female) | `ff_siwis` |
-| `hf_` | Hindi (female) | `hf_alpha` |
+| `hf_` | Hindi (female) | `hf_alpha`, `hf_beta` |
+| `hm_` | Hindi (male) | `hm_omega`, `hm_psi` |
 | `if_` | Italian (female) | `if_sara` |
+| `im_` | Italian (male) | `im_nicola` |
 
 ## Voice Previews
 
