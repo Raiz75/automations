@@ -139,3 +139,65 @@ def batch_generate(quotes_json: str):
             })
 
     return {"videos": results, "total": len(results), "success": sum(1 for r in results if r["status"] == "ok"), "failed": sum(1 for r in results if r["status"] == "error")}
+
+
+def batch_generate_stream(quotes_json: str):
+    quotes = _parse_quotes(quotes_json)
+    if not quotes:
+        yield json.dumps({"error": "No valid quotes found"})
+        return
+
+    imgs   = _scan_assets(BG_IMAGE_DIR, IMAGE_EXTS)
+    musics = _scan_assets(BG_MUSIC_DIR, MUSIC_EXTS)
+
+    if not imgs:
+        yield json.dumps({"error": "No background images available"})
+        return
+    if not musics:
+        yield json.dumps({"error": "No background music available"})
+        return
+
+    batch_offset = _load_batch_number()
+    batches_in_run = (len(quotes) + 1) // 2
+    _save_batch_number(batch_offset + batches_in_run)
+
+    total = len(quotes)
+    yield json.dumps({"type": "start", "total": total})
+
+    results = []
+    for i, q in enumerate(quotes):
+        text   = q["text"]
+        author = _format_author(q["author"])
+
+        bg_img   = random.choice(imgs)
+        bg_music = random.choice(musics)
+
+        ts       = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
+        batch    = batch_offset + (i // 2)
+        slot     = (i % 2) + 1
+        out_path = OUTPUT_DIR / f"{ts}_b{batch:04d}_s{slot}.mp4"
+
+        try:
+            render_quote_video(
+                quote_text    = text,
+                author_text   = author,
+                bg_image_path = str(bg_img),
+                bg_music_path = str(bg_music),
+                output_path   = str(out_path),
+            )
+            results.append({
+                "status": "ok",
+                "filename": out_path.name,
+                "text": text[:80],
+                "author": author,
+            })
+        except Exception as e:
+            results.append({
+                "status": "error",
+                "error": str(e),
+                "text": text[:80],
+            })
+
+        yield json.dumps({"type": "progress", "current": i + 1, "total": total, "text": text[:80], "filename": out_path.name})
+
+    yield json.dumps({"type": "done", "videos": results, "total": len(results), "success": sum(1 for r in results if r["status"] == "ok"), "failed": sum(1 for r in results if r["status"] == "error")})

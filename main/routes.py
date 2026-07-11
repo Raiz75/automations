@@ -4,7 +4,7 @@ All Flask routes for the application.
 Separated from app.py for better organization.
 """
 
-from flask import jsonify, render_template, request, send_file, current_app
+from flask import jsonify, render_template, request, send_file, current_app, Response, stream_with_context
 import os
 import sys
 import shutil
@@ -29,7 +29,7 @@ except ImportError as e:
     VOICES = []
 
 try:
-    from quote_video_engine import batch_generate, get_status as qvm_status, get_assets as qvm_assets, get_config as qvm_config, get_master_prompt
+    from quote_video_engine import batch_generate, batch_generate_stream, get_status as qvm_status, get_assets as qvm_assets, get_config as qvm_config, get_master_prompt
     QUOTE_VIDEO_AVAILABLE = True
 except ImportError as e:
     print(f"⚠️ Quote Video import error: {e}")
@@ -236,7 +236,7 @@ def register_routes(app):
 
     @app.route("/api/quote-video/generate", methods=["POST"])
     def quote_video_generate():
-        """Batch generate quote videos from JSON"""
+        """Batch generate quote videos from JSON with streaming progress"""
         if not QUOTE_VIDEO_AVAILABLE:
             return jsonify({"error": "Quote Video engine not available"}), 503
 
@@ -246,10 +246,11 @@ def register_routes(app):
             if not quotes_json:
                 return jsonify({"error": "quotes_json is required"}), 400
 
-            result = batch_generate(quotes_json)
-            if "error" in result:
-                return jsonify(result), 400
-            return jsonify(result)
+            def generate():
+                for event in batch_generate_stream(quotes_json):
+                    yield event + "\n"
+
+            return Response(stream_with_context(generate()), mimetype="application/x-ndjson")
 
         except Exception as e:
             current_app.logger.error(f"Quote Video generation error: {e}")

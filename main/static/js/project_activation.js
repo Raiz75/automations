@@ -54,15 +54,10 @@ function botLog(msg) {
     const out = document.getElementById('bot-output');
     if (!out) return;
     const ts = new Date().toLocaleTimeString();
-    const cursorSpan = out.querySelector('.cursor');
-    if (cursorSpan) cursorSpan.remove();
     const line = document.createElement('span');
     line.className = 'line';
     line.innerHTML = '<span class="timestamp">[' + ts + ']</span> $ ' + msg;
     out.appendChild(line);
-    const newCursor = document.createElement('span');
-    newCursor.className = 'cursor';
-    out.appendChild(newCursor);
     out.scrollTop = out.scrollHeight;
 }
 

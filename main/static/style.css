@@ -620,16 +620,6 @@ body {
     min-height: 0;
 }
 
-.bot-panel-output .cursor {
-    display: inline-block;
-    width: 7px;
-    height: 15px;
-    background: #7fcc7f;
-    margin-left: 2px;
-    animation: blink 1s step-end infinite;
-    vertical-align: text-bottom;
-}
-
 .bot-panel-output .line {
     display: block;
 }
@@ -637,11 +627,6 @@ body {
 .bot-panel-output .timestamp {
     color: #555;
     font-size: 11px;
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
 }
 
 /* Dark mode */
@@ -655,9 +640,6 @@ body {
     }
     .bot-panel-output {
         color: #6fbf6f;
-    }
-    .bot-panel-output .cursor {
-        background: #6fbf6f;
     }
 }
 
