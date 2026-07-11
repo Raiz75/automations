@@ -1,0 +1,151 @@
+{% extends "_base.html" %}
+
+{% block title %}MP4 to MP3 Converter{% endblock %}
+
+{% block content %}
+{% import "_partials/project_header.html" as header %}
+{% import "_partials/project_content.html" as content %}
+
+{{ header.project_header(
+    title="🎵 MP4 to MP3 Converter",
+    description="Convert video files to MP3 audio using the FreeConvert API. Select .mp4 files and batch convert them.",
+    status_dot="checking",
+    status_label="checking engine…",
+    activate_text="Activate",
+    project_id="mp4-mp3-converter"
+) }}
+
+{% call content.project_content("mp4-mp3-converter") %}
+    <div class="section">
+        <h3>Select Video Files</h3>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <input type="file" id="mmc-file-input" multiple accept=".mp4,.mkv,.avi,.mov,.wmv,.webm,.flv,.m4v" style="flex:1; padding:10px; background:#f5f5f5; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+        </div>
+        <div id="mmc-file-list" style="padding:10px; background:#f0f0f0; border-radius:6px; font-size:13px; color:#666; min-height:40px; max-height:200px; overflow-y:auto;">
+            <div style="color:#999;">No files selected.</div>
+        </div>
+    </div>
+
+    <div class="section" id="mmc-progress-section" style="display:none;">
+        <h3>Progress</h3>
+        <progress id="mmc-progress" style="width:100%; height:12px; border-radius:6px;" value="0" max="100"></progress>
+    </div>
+
+    <button onclick="convertFiles()" class="github-link" style="background: #e94560;" id="convert-btn">CONVERT TO MP3</button>
+    <div id="mmc-loading" style="display: none; margin-top: 10px; color: #e94560; font-weight: 500;">Converting... Please wait.</div>
+{% endcall %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let isConverting = false;
+    let selectedFiles = [];
+
+    function checkStatus() {
+        const dot = document.querySelector('.status-dot');
+        const label = document.querySelector('.status-dot-label');
+        dot.className = 'status-dot online';
+        dot.title = 'Engine ready';
+        label.textContent = 'engine ready';
+    }
+
+    document.getElementById("mmc-file-input").addEventListener("change", function() {
+        selectedFiles = Array.from(this.files);
+        const el = document.getElementById("mmc-file-list");
+        if (selectedFiles.length === 0) {
+            el.innerHTML = '<div style="color:#999;">No files selected.</div>';
+        } else {
+            el.innerHTML = selectedFiles.map(f => `<div style="padding:2px 0;">📹 ${f.name}</div>`).join("");
+        }
+    });
+
+    async function convertFiles() {
+        if (isConverting) return;
+        if (selectedFiles.length === 0) {
+            alert("Please select at least one video file.");
+            return;
+        }
+        isConverting = true;
+
+        const btn = document.getElementById("convert-btn");
+        btn.disabled = true;
+        btn.textContent = "UPLOADING...";
+
+        const loading = document.getElementById("mmc-loading");
+        loading.style.display = "block";
+
+        const progressSection = document.getElementById("mmc-progress-section");
+        progressSection.style.display = "block";
+        const progress = document.getElementById("mmc-progress");
+        progress.value = 0;
+
+        botLog("Starting upload...");
+
+        try {
+            const formData = new FormData();
+            for (const file of selectedFiles) {
+                formData.append("files", file);
+            }
+
+            btn.textContent = "CONVERTING...";
+
+            const response = await fetch("/api/mp4-mp3-converter/convert", {
+                method: "POST",
+                body: formData
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const event = JSON.parse(line);
+
+                        if (event.error) {
+                            botLog("ERROR: " + event.error);
+                            return;
+                        }
+
+                        if (event.type === "start") {
+                            progress.max = event.total;
+                            progress.value = 0;
+                        }
+
+                        if (event.type === "progress") {
+                            progress.value = event.current;
+                            botLog(`[${event.current}/${event.total}] ${event.name} → ${event.filename}`);
+                        }
+
+                        if (event.type === "done") {
+                            progress.value = event.total;
+                            botLog(`Done. ${event.success} success, ${event.failed} failed.`);
+                        }
+                    } catch (e) {}
+                }
+            }
+        } catch (e) {
+            botLog("Network error: " + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "CONVERT TO MP3";
+            loading.style.display = "none";
+            isConverting = false;
+            selectedFiles = [];
+            document.getElementById("mmc-file-input").value = "";
+            document.getElementById("mmc-file-list").innerHTML = '<div style="color:#999;">No files selected.</div>';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", checkStatus);
+</script>
+{% endblock %}

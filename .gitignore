@@ -41,3 +41,8 @@ engine/quote-video-maker/bg-music/*
 engine/quote-video-maker/output/*
 !engine/quote-video-maker/output/.gitkeep
 engine/quote-video-maker/state.json
+
+# MP4-MP3 CONVERTER
+engine/mp4-mp3-converter/__pycache__/
+engine/mp4-mp3-converter/output/*
+!engine/mp4-mp3-converter/output/.gitkeep

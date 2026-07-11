@@ -16,10 +16,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENGINE_DIR = os.path.join(BASE_DIR, 'engine')
 TTS_DIR = os.path.join(ENGINE_DIR, 'TTS')
 QUOTE_VIDEO_DIR = os.path.join(ENGINE_DIR, 'quote-video-maker')
+MP4_MP3_DIR = os.path.join(ENGINE_DIR, 'mp4-mp3-converter')
 
 sys.path.insert(0, ENGINE_DIR)
 sys.path.insert(0, TTS_DIR)
 sys.path.insert(0, QUOTE_VIDEO_DIR)
+sys.path.insert(0, MP4_MP3_DIR)
 sys.path.insert(0, BASE_DIR)
 
 # Import and register routes

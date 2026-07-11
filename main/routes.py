@@ -14,10 +14,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENGINE_DIR = os.path.join(BASE_DIR, 'engine')
 TTS_DIR = os.path.join(ENGINE_DIR, 'TTS')
 QUOTE_VIDEO_DIR = os.path.join(ENGINE_DIR, 'quote-video-maker')
+MP4_MP3_DIR = os.path.join(ENGINE_DIR, 'mp4-mp3-converter')
 
 sys.path.insert(0, ENGINE_DIR)
 sys.path.insert(0, TTS_DIR)
 sys.path.insert(0, QUOTE_VIDEO_DIR)
+sys.path.insert(0, MP4_MP3_DIR)
 
 # Import TTS functions
 try:
@@ -34,6 +36,13 @@ try:
 except ImportError as e:
     print(f"⚠️ Quote Video import error: {e}")
     QUOTE_VIDEO_AVAILABLE = False
+
+try:
+    from engine import batch_convert_stream
+    MP4_MP3_AVAILABLE = True
+except ImportError as e:
+    print(f"⚠️ MP4-MP3 Converter import error: {e}")
+    MP4_MP3_AVAILABLE = False
 
 
 # ============================================
@@ -52,6 +61,13 @@ PROJECTS_CONFIG = {
         "icon": "🎬",
         "url": "/quote-video",
         "template": "quote-video.html",
+        "enabled": True
+    },
+    "mp4-mp3-converter": {
+        "name": "MP4 to MP3 Converter",
+        "icon": "🎵",
+        "url": "/mp4-mp3-converter",
+        "template": "mp4-mp3-converter.html",
         "enabled": True
     },
 }
@@ -92,6 +108,11 @@ def register_routes(app):
     def quote_video_page():
         """Quote Video Maker project page"""
         return render_template("quote-video.html", current_project_id="quote-video")
+    
+    @app.route("/mp4-mp3-converter")
+    def mp4_mp3_page():
+        """MP4 to MP3 Converter project page"""
+        return render_template("mp4-mp3-converter.html", current_project_id="mp4-mp3-converter")
     
     # ============================================
     # API ROUTES
@@ -254,6 +275,48 @@ def register_routes(app):
 
         except Exception as e:
             current_app.logger.error(f"Quote Video generation error: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    # ============================================
+    # MP4-MP3 CONVERTER API ROUTES
+    # ============================================
+
+    @app.route("/api/mp4-mp3-converter/convert", methods=["POST"])
+    def mp4_mp3_convert():
+        """Upload files and convert them to MP3"""
+        if not MP4_MP3_AVAILABLE:
+            return jsonify({"error": "Converter not available"}), 503
+
+        try:
+            if "files" not in request.files:
+                return jsonify({"error": "No files provided"}), 400
+
+            files = request.files.getlist("files")
+            if not files:
+                return jsonify({"error": "No files provided"}), 400
+
+            mp4_mp3_dir = os.path.join(ENGINE_DIR, "mp4-mp3-converter")
+            out_dir = os.path.join(mp4_mp3_dir, "output")
+
+            saved = []
+            for f in files:
+                if f.filename:
+                    safe_name = os.path.basename(f.filename)
+                    dest = os.path.join(out_dir, safe_name)
+                    f.save(dest)
+                    saved.append(dest)
+
+            if not saved:
+                return jsonify({"error": "No valid files received"}), 400
+
+            def generate():
+                for event in batch_convert_stream(saved):
+                    yield event + "\n"
+
+            return Response(stream_with_context(generate()), mimetype="application/x-ndjson")
+
+        except Exception as e:
+            current_app.logger.error(f"MP4-MP3 conversion error: {e}")
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/shutdown", methods=["POST"])
