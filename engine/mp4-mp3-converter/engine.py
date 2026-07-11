@@ -13,7 +13,6 @@ API_BASE = "https://api.freeconvert.com/v1/process"
 POLL_INTERVAL = 3
 POLL_TIMEOUT = 300
 
-TEMP_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 

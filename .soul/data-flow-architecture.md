@@ -49,6 +49,12 @@ graph TB
         Orchestrator --> Prompt
     end
     
+    subgraph MMC["MP4-MP3 Converter engine/mp4-mp3-converter/"]
+        MCEngine[engine.py]
+        FreeConvert[FreeConvert API]
+        MCEngine --> FreeConvert
+    end
+    
     API -->|POST /tts/generate| TEngine
     API -->|GET /tts/voices| TEngine
     API -->|GET /tts/status| TEngine
@@ -60,7 +66,9 @@ graph TB
     API -->|GET /quote-video/config| Orchestrator
     API -->|GET /quote-video/master-prompt| Orchestrator
     
-    Renderer -->|Output MP4| OutputVid[output/]
+    API -->|POST /mp4-mp3-converter/convert| MCEngine
+
+Renderer -->|Output MP4| OutputVid[output/]
     TEngine -->|Output MP3| OutputAudio[output/]
     
     Flask -->|Serve files| OutputVid
@@ -210,6 +218,7 @@ main/
 
 ## Related
 
+- [[mp4-mp3-converter|MP4 to MP3 Converter]]
 - [[automations-home|Home]]
 - [[main-app-flask|Main App (Flask)]]
 - [[tts-engine|TTS Engine]]
