@@ -255,6 +255,11 @@ def register_routes(app):
             current_app.logger.error(f"Quote Video generation error: {e}")
             return jsonify({"error": str(e)}), 500
 
+    @app.route("/api/shutdown", methods=["POST"])
+    def shutdown():
+        """Kill the Python server process"""
+        os._exit(0)
+
     @app.route("/api/quote-video/output/<filename>")
     def get_quote_video(filename):
         """Serve generated video files"""

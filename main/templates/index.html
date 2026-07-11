@@ -3,10 +3,51 @@
 
 {% block title %}Python Hub - Overview{% endblock %}
 
+{% block extra_head %}
+<style>
+.kill-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: #e94560;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 0 2px 10px rgba(233, 69, 96, 0.3);
+}
+.kill-btn:hover {
+    background: #c7304a;
+    transform: scale(1.05);
+}
+.kill-btn:active {
+    transform: scale(0.95);
+}
+</style>
+{% endblock %}
+
 {% block content %}
+<button class="kill-btn" onclick="killServer()" title="Shutdown server">QUIT</button>
+
 <div class="welcome">
     <h2>Welcome to Python Project Hub</h2>
     <p>Select a project from the sidebar to view details.</p>
+    <script>
+    function killServer() {
+        if (confirm('Shutdown the Python server?')) {
+            fetch('/api/shutdown', { method: 'POST' });
+            setTimeout(() => { window.location.reload(); }, 500);
+        }
+    }
+    </script>
     <div style="margin-top: 30px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
             <div style="padding: 20px; background: #f5f5f5; border-radius: 8px; max-width: 300px;">
                 <h3 style="color: #e94560; margin-bottom: 10px;">🔊 Text to Speech</h3>
