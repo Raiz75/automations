@@ -66,14 +66,6 @@ function botLog(msg) {
     out.scrollTop = out.scrollHeight;
 }
 
-function toggleSideConsole() {
-    const panel = document.getElementById('bot-panel');
-    const btn = panel.querySelector('.bot-toggle');
-    const isCollapsed = panel.classList.toggle('collapsed');
-    panel.classList.toggle('visible');
-    btn.textContent = isCollapsed ? '◂' : '▸';
-}
-
 // Show toast notification
 function showToast(msg, type, duration) {
     type = type || 'success';

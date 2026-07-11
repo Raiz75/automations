@@ -609,30 +609,6 @@ body {
     flex: 1;
 }
 
-.bot-toggle {
-    background: transparent;
-    border: none;
-    color: #666;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 0.15s, color 0.15s;
-}
-
-.bot-toggle:hover {
-    background: rgba(255,255,255,0.05);
-    color: #aaa;
-}
-
-.bot-panel.collapsed .bot-panel-output {
-    display: none;
-}
-
-.bot-panel.collapsed .bot-toggle {
-    transform: rotate(0deg);
-}
-
 .bot-panel-output {
     flex: 1;
     padding: 16px;
@@ -682,10 +658,6 @@ body {
     }
     .bot-panel-output .cursor {
         background: #6fbf6f;
-    }
-    .bot-toggle:hover {
-        background: rgba(255,255,255,0.08);
-        color: #888;
     }
 }
 
