@@ -46,3 +46,14 @@ engine/quote-video-maker/state.json
 engine/mp4-mp3-converter/__pycache__/
 engine/mp4-mp3-converter/output/*
 !engine/mp4-mp3-converter/output/.gitkeep
+
+# EXPLAINER VIDEO
+engine/explainer-video-maker/__pycache__/
+engine/explainer-video-maker/output/*
+!engine/explainer-video-maker/output/.gitkeep
+engine/explainer-video-maker/assets/video/*
+!engine/explainer-video-maker/assets/video/.gitkeep
+engine/explainer-video-maker/assets/images/*
+!engine/explainer-video-maker/assets/images/.gitkeep
+engine/explainer-video-maker/assets/character/*
+!engine/explainer-video-maker/assets/character/.gitkeep

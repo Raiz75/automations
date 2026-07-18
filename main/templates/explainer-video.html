@@ -1,0 +1,375 @@
+<!-- automations\main\templates\explainer-video.html -->
+{% extends "_base.html" %}
+
+{% block title %}Explainer Video Maker{% endblock %}
+
+{% block content %}
+{% import "_partials/project_header.html" as header %}
+{% import "_partials/project_content.html" as content %}
+
+{{ header.project_header(
+    title="🎥 Explainer Video Maker",
+    description="Generate 1920×1080 explainer videos with TTS narration, auto-detected images, character poses, and hardcoded subtitles.",
+    status_dot="checking",
+    status_label="checking engine…",
+    activate_text="Activate",
+    project_id="explainer-video"
+) }}
+
+{% call content.project_content("explainer-video") %}
+
+    <style>
+    .phase-header {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #e94560;
+        margin-top: 24px;
+        margin-bottom: 4px;
+        padding-top: 16px;
+        border-top: 1px solid #ddd;
+    }
+    .phase-header:first-child { border-top: none; margin-top: 0; }
+    .step-hint {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 10px;
+    }
+    .copy-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #0f3460;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.15s;
+        margin-bottom: 10px;
+    }
+    .copy-btn:hover { background: #1a4a8a; }
+    .copy-btn.ok { background: #1a472a; }
+    .evm-field {
+        width: 100%;
+        padding: 12px;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 13px;
+        resize: vertical;
+        color: #555;
+    }
+    .evm-field:focus {
+        outline: none;
+        border-color: #e94560;
+        box-shadow: 0 0 0 3px rgba(233,69,96,0.1);
+    }
+    textarea.evm-field { font-family: monospace; }
+    </style>
+
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <!-- PHASE 1 — Transcript & Script -->
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <div class="phase-header">▸ PHASE 1 — Transcript &amp; Script</div>
+    <div class="step-hint">1. Paste a reference transcript → 2. Copy Prompt 1 to AI → 3. Paste AI's JSON below</div>
+
+    <!-- Step 1: Reference Transcript -->
+    <div class="section">
+        <h3>Step 1 — Reference Transcript (paste from famous video)</h3>
+        <textarea id="evm-transcript" class="evm-field" rows="6" placeholder="Paste the transcript of a famous video here. Prompt 1 will use it as the flow reference."></textarea>
+    </div>
+
+    <!-- Step 2: Copy Prompt 1 -->
+    <div class="section">
+        <h3>Step 2 — Copy Prompt 1 → AI</h3>
+        <button onclick="copyMasterPrompt(1)" class="copy-btn" id="copy-prompt1-btn">📋 COPY PROMPT 1 — Generates script JSON</button>
+        <div style="margin-top:6px; font-size:11px; color:#888;">The transcript above is automatically prepended to the prompt.</div>
+    </div>
+
+    <!-- Step 3: Script Segments JSON -->
+    <div class="section">
+        <h3>Step 3 — Script Segments JSON (paste AI output here)</h3>
+        <textarea id="evm-script" class="evm-field" rows="10" placeholder='Each segment needs: segment, intent, microsegments[]
+Each microsegment needs: text, image (int), pose (string or null)
+
+[
+  {"segment": 1, "intent": "hook", "microsegments": [
+    {"text": "Short punchy hook.", "image": 1, "pose": "emphasis"},
+    {"text": "Stakes raised.", "image": 2, "pose": null}
+  ]},
+  {"segment": 2, "intent": "setup", "microsegments": [
+    {"text": "Here is the world before.", "image": 3, "pose": "explaining"}
+  ]}
+]
+
+intents: hook | setup | escalation | conflict | reveal | resolution | payoff
+poses:   asking | authority | emphasis | explaining | pointingLeft | null'></textarea>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <!-- PHASE 2 — Image Prompts & Selection -->
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <div class="phase-header">▸ PHASE 2 — Image Prompts &amp; Selection</div>
+    <div class="step-hint">4. Copy Prompt 2 to AI → 5. Generate &amp; download images → 6. Place in assets/images/ folder</div>
+
+    <!-- Step 4: Copy Prompt 2 -->
+    <div class="section">
+        <h3>Step 4 — Copy Prompt 2 → AI</h3>
+        <button onclick="copyMasterPrompt(2)" class="copy-btn" id="copy-prompt2-btn">📋 COPY PROMPT 2 — Generates image prompts</button>
+    </div>
+
+    <!-- Steps 5-6: Images -->
+    <div class="section">
+        <h3>Steps 5-6 — Images (auto-detected from assets/images/)</h3>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+            <button onclick="loadAssets()" class="copy-btn" style="margin-bottom:0;">🔍 SCAN IMAGES</button>
+            <span id="evm-scan-time" style="font-size:11px; color:#888;"></span>
+        </div>
+        <div id="evm-assets" style="padding:10px; background:#f0f0f0; border-radius:6px; font-size:14px; color:#666;">Not scanned yet.</div>
+        <div style="margin-top:6px; font-size:11px; color:#888;">Name files starting with the image number: <code>1_desc.png</code>, <code>2_name.jpg</code>, <code>3_idea.webp</code> (first digits = slot number)</div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <!-- PHASE 3 — Title, Description & Tags -->
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <div class="phase-header">▸ PHASE 3 — Title, Description &amp; Tags</div>
+    <div class="step-hint">7. Copy Prompt 3 to AI → 8. Paste AI's JSON output below</div>
+
+    <!-- Step 7: Copy Prompt 3 -->
+    <div class="section">
+        <h3>Step 7 — Copy Prompt 3 → AI</h3>
+        <button onclick="copyMasterPrompt(3)" class="copy-btn" id="copy-prompt3-btn">📋 COPY PROMPT 3 — Generates title, description &amp; tags JSON</button>
+    </div>
+
+    <!-- Step 8: Video Details JSON -->
+    <div class="section">
+        <h3>Step 8 — Video Details JSON (paste AI output here)</h3>
+        <textarea id="evm-details" class="evm-field" rows="4" placeholder='{"title": "My Video", "description": "...", "tags": ["tag1", "tag2"]}'></textarea>
+        <div style="margin-top:4px; font-size:11px; color:#888;">Title becomes the filename; full JSON saved as .txt alongside the MP4.</div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <!-- PHASE 4 — Render Video -->
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <div class="phase-header">▸ PHASE 4 — Render Video</div>
+    <div class="step-hint">9. Click GENERATE VIDEO to start rendering</div>
+
+    <!-- Progress -->
+    <div class="section" id="evm-progress-section" style="display:none;">
+        <h3>Progress</h3>
+        <progress id="evm-progress" style="width:100%; height:12px; border-radius:6px;" value="0" max="100"></progress>
+    </div>
+
+    <!-- Generate Button -->
+    <button onclick="renderVideo()" class="github-link" style="background:#e94560; margin-top:10px;" id="evm-render-btn">▶ GENERATE VIDEO</button>
+    <div id="evm-loading" style="display:none; margin-top:10px; color:#e94560; font-weight:500;">Rendering video... This may take a while.</div>
+    <div id="evm-result" style="display:none; margin-top:10px; padding:12px; background:#f0f0f0; border-radius:6px; font-size:14px;"></div>
+
+{% endcall %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let isRendering = false;
+
+    function log(msg) {
+        botLog(msg);
+    }
+
+    function checkStatus() {
+        fetch("/api/explainer-video/status")
+            .then(r => r.json())
+            .then(s => {
+                const dot = document.querySelector('.status-dot');
+                const label = document.querySelector('.status-dot-label');
+                if (s.character_poses !== undefined) {
+                    dot.className = 'status-dot online';
+                    dot.title = 'Engine ready';
+                    label.textContent = 'engine ready';
+                } else {
+                    dot.className = 'status-dot offline';
+                    dot.title = 'Engine unavailable';
+                    label.textContent = 'engine offline';
+                }
+            })
+            .catch(e => {
+                const dot = document.querySelector('.status-dot');
+                dot.className = 'status-dot offline';
+                dot.title = 'Error';
+                document.querySelector('.status-dot-label').textContent = 'error';
+            });
+    }
+
+    function loadAssets() {
+        const el = document.getElementById("evm-assets");
+        el.innerHTML = "Scanning...";
+        fetch("/api/explainer-video/assets")
+            .then(r => r.json())
+            .then(a => {
+                const now = new Date();
+                document.getElementById("evm-scan-time").textContent = "Last scan: " + now.toLocaleTimeString();
+                if (a.images && a.images.length) {
+                    el.innerHTML = "<strong>Images detected:</strong> " + a.images.map(i => `#${i.num} (${i.name})`).join(" &nbsp;|&nbsp; ");
+                } else {
+                    el.innerHTML = "No numbered images found. Add files named like <code>01_desc.jpg</code> to <code>engine/explainer-video-maker/assets/images/</code>.";
+                }
+            })
+            .catch(e => {
+                el.textContent = "Failed to load assets.";
+            });
+    }
+
+    function copyMasterPrompt(n) {
+        fetch("/api/explainer-video/master-prompts")
+            .then(r => r.json())
+            .then(d => {
+                const key = "prompt" + n;
+                if (d[key]) {
+                    let text = d[key];
+                    if (n === 1) {
+                        const transcript = document.getElementById("evm-transcript").value.trim();
+                        if (transcript) {
+                            text = text.replace("[TRANSCRIPT]", transcript);
+                        }
+                    }
+                    navigator.clipboard.writeText(text).then(() => {
+                        const btn = document.getElementById("copy-prompt" + n + "-btn");
+                        btn.textContent = "✓ COPIED!";
+                        btn.className = "copy-btn ok";
+                        setTimeout(() => {
+                            btn.textContent = "📋 COPY PROMPT " + n + (n === 1 ? " — Generates script JSON" : n === 2 ? " — Generates image prompts" : " — Generates title, description & tags JSON");
+                            btn.className = "copy-btn";
+                        }, 2000);
+                    });
+                } else {
+                    alert("Master prompt " + n + " not available.");
+                }
+            });
+    }
+
+    async function renderVideo() {
+        const scriptJson = document.getElementById("evm-script").value.trim();
+        if (!scriptJson) {
+            alert("Please paste your script JSON first.");
+            return;
+        }
+
+        if (isRendering) return;
+        isRendering = true;
+
+        const btn = document.getElementById("evm-render-btn");
+        btn.disabled = true;
+        btn.textContent = "GENERATING...";
+
+        const loading = document.getElementById("evm-loading");
+        loading.style.display = "block";
+
+        const progressSection = document.getElementById("evm-progress-section");
+        progressSection.style.display = "block";
+        const progress = document.getElementById("evm-progress");
+        progress.value = 0;
+
+        const resultDiv = document.getElementById("evm-result");
+        resultDiv.style.display = "none";
+
+        log("Starting render...");
+
+        try {
+            JSON.parse(scriptJson);
+        } catch (e) {
+            log("Invalid JSON: " + e.message);
+            btn.disabled = false;
+            btn.textContent = "▶ GENERATE VIDEO";
+            loading.style.display = "none";
+            isRendering = false;
+            return;
+        }
+
+        let videoTitle = null;
+        let detailsJson = null;
+        const detailsRaw = document.getElementById("evm-details").value.trim();
+        if (detailsRaw) {
+            try {
+                const details = JSON.parse(detailsRaw);
+                videoTitle = details.title || null;
+                detailsJson = detailsRaw;
+            } catch (e) {
+                log("Warning: Video Details JSON invalid, ignoring: " + e.message);
+            }
+        }
+
+        try {
+            const response = await fetch("/api/explainer-video/render", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ segments_json: scriptJson, video_title: videoTitle, details_json: detailsJson })
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const event = JSON.parse(line);
+
+                        if (event.error) {
+                            log("ERROR: " + event.error);
+                            resultDiv.style.display = "block";
+                            resultDiv.innerHTML = '<strong style="color:#e94560;">Error:</strong> ' + event.error;
+                            return;
+                        }
+
+                        if (event.type === "start") {
+                            progress.max = event.total;
+                            progress.value = 0;
+                            log("Render started — " + event.total + " microsegments");
+                        }
+
+                        if (event.type === "done") {
+                            progress.value = progress.max || 1;
+                            log("Render complete: " + event.filename);
+                            resultDiv.style.display = "block";
+                            resultDiv.innerHTML = '<strong style="color:#28a745;">✓ Render complete!</strong>';
+                        }
+
+                        if (event.type === "error") {
+                            log("RENDER ERROR: " + event.error);
+                            resultDiv.style.display = "block";
+                            resultDiv.innerHTML = '<strong style="color:#e94560;">Render Error:</strong> ' + event.error;
+                        }
+                    } catch (e) {
+                        // skip malformed lines
+                    }
+                }
+            }
+        } catch (e) {
+            log("Network error: " + e.message);
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = '<strong style="color:#e94560;">Network Error:</strong> ' + e.message;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "▶ GENERATE VIDEO";
+            loading.style.display = "none";
+            isRendering = false;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        checkStatus();
+        loadAssets();
+    });
+</script>
+{% endblock %}

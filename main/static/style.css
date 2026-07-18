@@ -855,4 +855,32 @@ body {
     .welcome p {
         color: #aaa !important;
     }
+
+    /* Explainer Video Maker dark mode */
+    #evm-assets {
+        background: #0d0d1a !important;
+        color: #aaa !important;
+    }
+
+    #evm-script,
+    #evm-transcript,
+    #evm-details,
+    #evm-title,
+    #master-prompt1-area,
+    #master-prompt2-area,
+    #master-prompt3-area {
+        background: #0d0d1a !important;
+        color: #e0e0e0 !important;
+        border-color: #333 !important;
+    }
+
+    #evm-result {
+        background: #0d0d1a !important;
+        color: #e0e0e0 !important;
+        border-color: #333 !important;
+    }
+
+    .phase-header {
+        border-top-color: #333 !important;
+    }
 }

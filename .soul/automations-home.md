@@ -10,7 +10,7 @@ tags:
 
 # Automations
 
-A Flask web application that exposes three media-generation engines as a unified web interface — a **Text-to-Speech** engine, a **Quote Video Maker** for social media content, and an **MP4 to MP3 Converter** using the FreeConvert API.
+A Flask web application that exposes four media-generation engines as a unified web interface — a **Text-to-Speech** engine, a **Quote Video Maker** for social media content, and an **MP4 to MP3 Converter** using the FreeConvert API.
 
 > [!info] Quick Links
 > - [[main-app-flask|Main App (Flask)]] — web layer, routes, API endpoints
@@ -18,6 +18,7 @@ A Flask web application that exposes three media-generation engines as a unified
 > - [[quote-video-engine|Quote Video Engine]] — video rendering pipeline
 > - [[orchestration-layer|Orchestration Layer]] — batch generation, state, asset pairing
 > - [[mp4-mp3-converter|MP4 to MP3 Converter]] — FreeConvert API wrapper
+> - [[explainer-video-maker|Explainer Video Maker]] — TTS-narrated explainer videos with images, character poses, and subtitles
 > - [[frontend-ui|Frontend & UI]] — templates, JavaScript, CSS
 > - [[data-flow-architecture|Data Flow & Architecture]] — end-to-end flow
 

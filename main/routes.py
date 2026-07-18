@@ -15,11 +15,13 @@ ENGINE_DIR = os.path.join(BASE_DIR, 'engine')
 TTS_DIR = os.path.join(ENGINE_DIR, 'TTS')
 QUOTE_VIDEO_DIR = os.path.join(ENGINE_DIR, 'quote-video-maker')
 MP4_MP3_DIR = os.path.join(ENGINE_DIR, 'mp4-mp3-converter')
+EXPLAINER_VIDEO_DIR = os.path.join(ENGINE_DIR, 'explainer-video-maker')
 
 sys.path.insert(0, ENGINE_DIR)
 sys.path.insert(0, TTS_DIR)
 sys.path.insert(0, QUOTE_VIDEO_DIR)
 sys.path.insert(0, MP4_MP3_DIR)
+sys.path.insert(0, EXPLAINER_VIDEO_DIR)
 
 # Import TTS functions
 try:
@@ -43,6 +45,13 @@ try:
 except ImportError as e:
     print(f"⚠️ MP4-MP3 Converter import error: {e}")
     MP4_MP3_AVAILABLE = False
+
+try:
+    from engine import get_status as evm_status, get_assets as evm_assets, get_master_prompts, render_video_stream
+    EXPLAINER_VIDEO_AVAILABLE = True
+except ImportError as e:
+    print(f"⚠️ Explainer Video Maker import error: {e}")
+    EXPLAINER_VIDEO_AVAILABLE = False
 
 
 # ============================================
@@ -68,6 +77,13 @@ PROJECTS_CONFIG = {
         "icon": "🎵",
         "url": "/mp4-mp3-converter",
         "template": "mp4-mp3-converter.html",
+        "enabled": True
+    },
+    "explainer-video": {
+        "name": "Explainer Video Maker",
+        "icon": "🎥",
+        "url": "/explainer-video",
+        "template": "explainer-video.html",
         "enabled": True
     },
 }
@@ -317,6 +333,79 @@ def register_routes(app):
 
         except Exception as e:
             current_app.logger.error(f"MP4-MP3 conversion error: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    # ============================================
+    # EXPLAINER VIDEO API ROUTES
+    # ============================================
+
+    @app.route("/explainer-video")
+    def explainer_video_page():
+        """Explainer Video Maker project page"""
+        return render_template("explainer-video.html", current_project_id="explainer-video")
+
+    @app.route("/api/explainer-video/status")
+    def explainer_video_status():
+        """Check Explainer Video engine status"""
+        if EXPLAINER_VIDEO_AVAILABLE:
+            return jsonify(evm_status())
+        return jsonify({"available": False, "error": "Explainer Video engine not loaded"})
+
+    @app.route("/api/explainer-video/assets")
+    def explainer_video_assets():
+        """List available images"""
+        if EXPLAINER_VIDEO_AVAILABLE:
+            return jsonify(evm_assets())
+        return jsonify({"images": []})
+
+    @app.route("/api/explainer-video/master-prompts")
+    def explainer_video_master_prompts():
+        """Get the master prompt texts"""
+        if EXPLAINER_VIDEO_AVAILABLE:
+            return jsonify(get_master_prompts())
+        return jsonify({"prompt1": "", "prompt2": "", "prompt3": ""})
+
+    @app.route("/api/explainer-video/render", methods=["POST"])
+    def explainer_video_render():
+        """Render an explainer video from segments JSON with streaming progress"""
+        if not EXPLAINER_VIDEO_AVAILABLE:
+            return jsonify({"error": "Explainer Video engine not available"}), 503
+
+        try:
+            data = request.json
+            segments_json = data.get("segments_json", "").strip()
+            video_title = data.get("video_title", "").strip() or None
+            details_json = data.get("details_json", "").strip() or None
+
+            if not segments_json:
+                return jsonify({"error": "segments_json is required"}), 400
+
+            def generate():
+                for event in render_video_stream(segments_json, video_title, details_json):
+                    yield event + "\n"
+
+            return Response(stream_with_context(generate()), mimetype="application/x-ndjson")
+
+        except Exception as e:
+            current_app.logger.error(f"Explainer Video render error: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    @app.route("/api/explainer-video/output/<filename>")
+    def get_explainer_video(filename):
+        """Serve generated video files"""
+        try:
+            evm_output = os.path.join(EXPLAINER_VIDEO_DIR, "output")
+            file_path = os.path.join(evm_output, filename)
+
+            if not os.path.exists(file_path):
+                return jsonify({"error": "File not found"}), 404
+
+            return send_file(
+                file_path,
+                mimetype="video/mp4",
+                as_attachment=False
+            )
+        except Exception as e:
             return jsonify({"error": str(e)}), 500
 
     @app.route("/api/shutdown", methods=["POST"])

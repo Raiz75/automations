@@ -1,0 +1,229 @@
+Generate a long-form YouTube video script.
+
+TRANSCRIPT:
+[TRANSCRIPT]
+
+GOAL:
+You are given a transcript from a real video above.
+Study its flow, structure, and progression of ideas.
+Use it as your content blueprint — follow the same sequence of ideas and pacing,
+but rewrite everything in your own words.
+
+TONE — CRITICAL:
+Do NOT write like an explainer or educator.
+Write like a direct, confident narrator who is TELLING the viewer things:
+- What happened
+- How it works
+- When it occurred
+- Where it took place
+- Why it matters
+Use second person ("you") and present tense where natural.
+Be direct, punchy, and authoritative — not academic, not preachy.
+Examples of the right tone:
+  BAD:  "In this segment, we will explore how the system works."
+  GOOD: "Here's exactly how the system works."
+  BAD:  "It is important to understand that..."
+  GOOD: "This is what you need to know."
+
+================================================================================
+SEGMENT 1 — HOOK (MANDATORY RULES):
+================================================================================
+Segment 1 is the most critical segment. Viewers decide in the first 10 seconds.
+The FIRST microsegment of segment 1 MUST be a pattern-interrupt — a line that
+stops the scroll, creates instant tension, or states something counterintuitive.
+
+Use ONE of these proven hook formats:
+  A) Counterintuitive claim:  "Everything you know about [X] is wrong."
+  B) High-stakes scenario:    "In [year/place], [something shocking] happened — and nobody noticed."
+  C) Direct challenge:        "Most people get [X] completely backwards."
+  D) Unresolved mystery:      "There's something about [X] that nobody can explain."
+
+Rules for segment 1:
+- First microsegment: the hook line (≤12 words, maximum punch, no setup)
+- Second microsegment: immediately raise the stakes or deepen the tension
+- Third microsegment: promise what the viewer will understand by the end
+- Segment 1 must have exactly 3-4 microsegments
+- Do NOT ease in. Do NOT introduce yourself. Do NOT explain what the video is about.
+
+================================================================================
+SEGMENT INTENT — REQUIRED FIELD:
+================================================================================
+Every segment must declare its narrative role via an "intent" field.
+Choose exactly one per segment:
+
+  "hook"        — segment 1 only; pattern-interrupt opening
+  "setup"       — establishes context, characters, or the world
+  "escalation"  — raises stakes, adds complexity, builds toward a turn
+  "conflict"    — the central problem, tension, or contradiction
+  "reveal"      — the key insight, twist, or answer the video builds toward
+  "resolution"  — what happens after the reveal; consequences or conclusions
+  "payoff"      — final takeaway, call to reflection, or lasting implication
+
+Use this progression as your default arc:
+  hook → setup → escalation → conflict → reveal → resolution → payoff
+You may repeat "escalation" or add a second "conflict" for longer videos.
+Every segment's content must match its declared intent.
+
+================================================================================
+PACING VARIATION — MANDATORY:
+================================================================================
+Microsegment word count must vary deliberately. Two tiers:
+
+  SHORT (≤12 words):  punchy, declarative, high-impact lines
+  FULL  (13-30 words): explanatory, descriptive, or narrative lines
+
+Rules:
+- You MUST NOT write 3 or more consecutive microsegments of the same tier
+- Alternate: short → full → short, or full → short → full → short, etc.
+- Hook microsegments (segment 1) should lean short
+- Reveal and payoff segments can use longer lines for weight
+
+================================================================================
+POSE — SPARSE, HIGH-IMPACT ONLY:
+================================================================================
+The character pose overlay appears on-screen and draws attention.
+Used too often, it loses impact. Used on the right lines, it lands hard.
+
+TARGET: assign a pose to ~50% of microsegments. Leave the rest as null.
+
+When to assign a pose (high-intensity moments only):
+  "asking"       — a question that hooks or creates genuine curiosity
+  "authority"    — a definitive, hard-hitting factual claim
+  "emphasis"     — a warning, critical point, or dramatic beat
+  "explaining"   — a step-by-step or process line that benefits from gesture
+  "pointingLeft" — a line that directly references what's shown in the image
+
+When to use null (no pose):
+  - Transitional or connective lines
+  - Lines that continue a thought already established
+  - Any line where the pose would feel redundant or performative
+  - Calm, reflective, or low-energy narrative lines
+
+Pose repetition rule: never assign the same pose more than 2 consecutive times.
+After 2 in a row, the next posed microsegment must use a different pose (or null).
+
+================================================================================
+PROSODY — TTS-AWARE PUNCTUATION:
+================================================================================
+Write punctuation to guide TTS delivery at generation time.
+Every microsegment's text must encode its intended rhythm and stress
+through punctuation — do not rely on post-processing.
+
+INTENT-BASED RULES:
+
+  hook / payoff:
+    - Keep sentences short and punchy — one beat, one idea.
+    - Use ellipses (...) to insert a dramatic pause before a reveal word or phrase.
+    - Capitalize the single most important word in the microsegment for stress.
+    - Example: "Nobody saw it coming... NOBODY."
+
+  reveal:
+    - Use an em-dash (—) immediately before the key truth or punchline.
+    - The em-dash signals a beat, then the hard landing.
+    - Example: "That's not a bug — that's how it was DESIGNED."
+
+  conflict:
+    - Use an em-dash mid-sentence to create weight and split the tension.
+    - The two halves should feel like a contradiction or an irony.
+    - Example: "The system works — but not for you."
+
+  escalation:
+    - No softening. Keep lines declarative and fast-moving.
+    - No trailing ellipses, no em-dashes — momentum only.
+    - Sentences should drive forward without punctuation tricks.
+
+  setup / resolution:
+    - Neutral punctuation. No special treatment.
+    - Standard periods, commas where natural. No stress capitalization.
+
+POSE-BASED RULES (applied on top of intent rules):
+
+  "emphasis" pose:
+    - Capitalize the stressed word or phrase that carries the emotional weight.
+    - Example: "This is the part everyone gets WRONG."
+
+  "asking" pose:
+    - Always end the microsegment with a question mark (?).
+    - If the sentence flows better with a micro-pause before the question pivot,
+      add a lead comma.
+    - Example: "And the whole time, nobody asked — why is this ALLOWED?"
+    - Example: "So who, exactly, was supposed to stop this?"
+
+  "authority" pose:
+    - Hard declarative only. Period at the end. No exceptions.
+    - No ellipses, no em-dashes, no capitalized stress words.
+    - The sentence itself carries the authority — punctuation must not perform it.
+    - Example: "The policy was changed three times in one year."
+
+CONFLICT RESOLUTION — when pose and intent rules clash:
+  - "authority" pose overrides intent-level ellipses and em-dashes.
+  - "asking" pose overrides intent-level capitalization (question mark takes priority).
+  - "emphasis" pose capitalization stacks on top of intent rules — both apply.
+
+================================================================================
+REQUIREMENTS:
+================================================================================
+- 8-10 segments total
+- 1200-1800 words total
+- Each segment must focus on ONE broad idea (follow the transcript's natural idea progression)
+- Each segment is divided into microsegments
+- Each microsegment = ONE sentence or short thought mapped to ONE image and ONE pose (or null)
+
+================================================================================
+OUTPUT FORMAT (STRICT JSON):
+================================================================================
+Return ONLY a valid JSON array. No preamble, no explanation, no markdown.
+
+Each segment MUST include:
+- segment: segment number (integer)
+- intent: one of the 7 intent values above (string)
+- microsegments: array of objects, each with:
+    - text:  the narration line (string)
+    - image: globally unique image number (integer)
+    - pose:  one of the 5 pose values (string) OR null
+
+FORMAT:
+
+[
+  {
+    "segment": 1,
+    "intent": "hook",
+    "microsegments": [
+      {"text": "Short punchy hook.", "image": 1, "pose": "emphasis"},
+      {"text": "Stakes raised immediately — this changes everything you assumed.", "image": 2, "pose": null},
+      {"text": "By the end, you'll know exactly why.", "image": 3, "pose": "asking"}
+    ]
+  },
+  {
+    "segment": 2,
+    "intent": "setup",
+    "microsegments": [
+      {"text": "Here's the world before everything changed.", "image": 4, "pose": "explaining"},
+      {"text": "It looked normal.", "image": 5, "pose": null},
+      {"text": "It wasn't.", "image": 6, "pose": "authority"}
+    ]
+  }
+]
+
+================================================================================
+RULES:
+================================================================================
+1. Image numbering MUST be GLOBAL
+   - Start at 1, increment by 1 across ALL segments and ALL microsegments
+   - No duplicates, no gaps
+
+2. Each microsegment gets exactly ONE image number
+
+3. Each microsegment gets exactly ONE pose value (string) OR null
+   - null means no character overlay for that beat
+
+4. Each segment should have 3-6 microsegments (segment 1: exactly 3-4)
+
+5. Pacing: never 3+ consecutive microsegments of the same word-count tier
+
+6. Pose: ~50% of all microsegments should have a pose; rest must be null
+   Same pose may not repeat more than 2 consecutive times
+
+7. JSON must be valid — no trailing commas, no extra text, no markdown
+
+8. Output ONLY the JSON array
